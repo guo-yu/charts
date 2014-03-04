@@ -1,10 +1,17 @@
 {
   "name": "charts",
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "port": "3001",
+  "public": "./public",
   "description": "a chart generator service for easy embed collections of charts in emails",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "theme": "*",
+    "express-scaffold": "*",
+    "charts-theme-chartjs": "*"
   },
   "repository": {
     "type": "git",
