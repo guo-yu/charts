@@ -1,4 +1,6 @@
-var path = require('path'),
+var fs = require('fs'),
+    path = require('path'),
+    md5 = require('MD5'),
     Theme = require('theme'),
     phantom = require('phantom'),
     sys = require('../package');
@@ -26,17 +28,21 @@ Charts.prototype.capture = function(target, callback) {
     if (!callback) return callback(new Error('callback required'));
     return phantom.create(function(ph) {
         return ph.createPage(function(page) {
-            return page.open(target, function(status) {
+            page.open(target, function(status) {
                 if (status !== 'success') {
                     callback(new Error(status));
-                    return phantom.exit();
+                    return ph.exit()
                 }
                 var publics = path.resolve(__dirname, '../', sys.public);
                 var filename = md5(target) + '.png';
                 var screenshot = path.join(publics, filename);
-                page.render(screenshot);
-                callback(null, filename, screenshot);
-                return phantom.exit();
+                // 这里有一处硬编码，如何在 phantom 里优雅的判断已经加载完成？
+                setTimeout(function() {
+                    page.render(screenshot, function(err) {
+                        callback(err, filename, screenshot);
+                        return ph.exit()
+                    });
+                }, 1000);
             });
         });
     });
