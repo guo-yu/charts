@@ -10,6 +10,17 @@ var isRemote = function(dir) {
     return dir && (dir.indexOf('http') === 0 || dir.indexOf('https') === 0);
 }
 
+var fetchHW = function(canvas) {
+    var defaults = {}
+    defaults.width = 200;
+    defaults.height = 200;
+    if (!canvas || canvas.indexOf('x') === -1) return defaults;
+    var ret = {}
+    ret.width = canvas.split('x')[0];
+    ret.height = canvas.split('x')[1];
+    return ret;
+}
+
 // GET => http://localhost/chartjs/{a:1,b:2} => img
 // GET => http://localhost/chartjs/{a:1,b:2}?preview=ture => html
 exports.run = function(port) {
@@ -17,13 +28,21 @@ exports.run = function(port) {
 
     new server(sys).routes(function(app) {
         
-        app.get('/:theme/:data/:preview', function(req, res, next) {
-
+        app.get('/:theme/:canvas/:data/:preview', function(req, res, next) {
+            if (!req.params.theme) return next(new Error('theme required'));
+            if (!req.params.data) return next(new Error('data required'));
+            
             var params = {}
-            params.theme = req.params.theme;
-            params.data = req.params.data;
-            if (!params.theme) return next(new Error('theme required'));
-            if (!params.data) return next(new Error('data required'));
+            var canvas = fetchHW(req.params.canvas);
+
+            try {
+                params.data = {}
+                params.data.data = JSON.parse(req.params.data)
+                params.data.width = canvas.width;
+                params.data.height = canvas.height;
+            } catch (err) {
+                return next(new Error('data should be object'));
+            }
             
             var chart = new charts(params);
 
