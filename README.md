@@ -12,7 +12,7 @@ run charts as a service
 ```
 $ charts
 ```
-then embed your chart image like this, which your will get this img ![]()
+then embed your chart image like this, which your will get this img ![line](http://ww3.sinaimg.cn/large/61ff0de3gw1ee4xjmifz1j201h00q3y9.jpg)
 ```html
 <img src="http://localhost:3001/sparkline/300x100/1,4,4,7,5,9,10,10,10,10,10,100,20,12" />
 ```
