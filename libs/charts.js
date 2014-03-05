@@ -28,6 +28,7 @@ Charts.prototype.capture = function(target, callback) {
     if (!callback) return callback(new Error('callback required'));
     return phantom.create(function(ph) {
         return ph.createPage(function(page) {
+            page.settings.viewportSize = this.data;
             page.open(target, function(status) {
                 if (status !== 'success') {
                     callback(new Error(status));

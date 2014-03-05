@@ -4,13 +4,68 @@ a chart generator service for easy embed collections of charts in emails
 
 ### Installation
 ````
-$ [sudo] npm install charts
+$ [sudo] npm install charts -g
 ````
 
+### CLI useage
+run charts as a service
+```
+$ charts
+```
+then embed your chart image like this, which your will get this img ![]()
+```html
+<img src="http://localhost:3001/sparkline/300x100/1,4,4,7,5,9,10,10,10,10,10,100,20,12" />
+```
+Was that easy? We'll take a look at this very href.
+
+```
+http://localhost:3001/sparkline/300x100/1,4,4,7,5,9,10,10,10,10,10,100,20,12
+http://{{host}}/{{solution or solution shorthand}}/{{width}}x{{height}}/{{data}}
+```
+
+### Write your solutions
+Chart is made to be working with as many client charts solutions as you like. using Theme module, Chart is able to load solutions as a NPM module. So feel free to write your solutions like this:
+
+just clone this repo and happy hacking:
+```
+$ git clone https://github.com/turingou/charts.git && cd charts
+$ mkdir node_modules/charts-theme-mysolution
+$ cd node_modules/charts-theme-mysolution
+$ charts init
+$ vi index.jade
+// then start charts server 
+$ node ../../bin/cli
+```
+and visit `http://localhost:3001/mysolution/300x300/{{yourData}}`
+
+### Theme Structure
+
+- charts-theme-mysolution
+    - index.jade (or index.html) your chart html page
+    - package.json (define your `view engine` and `static` dir)
+    - static (contains your libs and scripts)
 
 ### Example
 ````javascript
-var charts = require('charts');
+var Charts = require('charts');
+var mychart = new Charts({
+    theme: 'charts-theme-mysolution',
+    width: 300,
+    height: 300,
+    data: {
+        x: [1,2,3,4,5],
+        y: [10,20,30,40,50]
+    }
+})
+
+mychart.render(function(err, html){
+    if (err) return console.log(err)
+    console.log(html);
+});
+
+mychart.capture('http://localhost:3001/mysolution/300x300/{{yourData}}', function(err, shot){
+    console.log(shot);
+});
 ````
 
 ### API

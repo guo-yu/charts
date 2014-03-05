@@ -41,6 +41,7 @@ exports.run = function(port) {
             params.data.data = req.params.data
             params.data.width = canvas.width;
             params.data.height = canvas.height;
+            params.theme = req.params.theme || null;
             
             var chart = new charts(params);
 

@@ -5,6 +5,7 @@
   "public": "./public",
   "description": "a chart generator service for easy embed collections of charts in emails",
   "main": "index.js",
+  "bin": "./bin/cli",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
