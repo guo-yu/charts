@@ -1,8 +1,9 @@
 {
   "name": "charts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "port": "3001",
   "public": "./public",
+  "seed": "https://github.com/turingou/charts-theme-chartjs.git",
   "description": "a chart generator service for easy embed collections of charts in emails",
   "main": "index.js",
   "bin": "./bin/cli",
@@ -10,6 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "exeq": "*",
     "MD5": "*",
     "phantom": "*",
     "theme": "*",
