@@ -24,11 +24,15 @@ Charts.prototype.render = function(callback, d) {
 };
 
 Charts.prototype.capture = function(target, callback) {
+    var self = this;
     if (!target) return callback(new Error('url required'));
     if (!callback) return callback(new Error('callback required'));
     return phantom.create(function(ph) {
-        return ph.createPage(function(page) {
-            page.settings.viewportSize = this.data;
+        return ph.createPage(function(page) {            
+            var viewportSize = { top: 0, left: 0 }
+            viewportSize.width = parseInt(self.data.width)
+            viewportSize.height = parseInt(self.data.height)
+            page.set('viewportSize', viewportSize)
             page.open(target, function(status) {
                 if (status !== 'success') {
                     callback(new Error(status));
