@@ -5,49 +5,48 @@ var fs = require('fs'),
     phantom = require('phantom'),
     sys = require('../package');
 
-var defaults = {};
 var locals = {};
-defaults.name = 'charts-theme-chartjs';
-defaults.realPath = path.join(__dirname, '../', 'node_modules', defaults.name);
-defaults.static = './static';
 locals.sys = sys;
 
 var Charts = function(params) {
-    this.theme = params.theme || defaults.name;
-    this.data = params.data || {};
-    this.themes = new Theme(path.resolve(__dirname, '../'), defaults, locals)
+    this.data = params && params.data || {};
+    this.theme = params && params.theme || 'charts-theme-chartjs';
+    this.themes = new Theme(path.resolve(__dirname, '../'), locals);
 }
 
-Charts.prototype.render = function(callback, d) {
-    var data = d || this.data;
-    this.themes.render(this.theme + '/index', data, callback)
+Charts.prototype.render = function(tpl, data, callback) {
+    this.themes.render((tpl || this.theme) + '/index', data || this.data, callback)
 };
 
-Charts.prototype.capture = function(target, callback) {
-    var self = this;
+Charts.prototype.capture = function(target, data, callback) {
     if (!target) return callback(new Error('url required'));
     if (!callback) return callback(new Error('callback required'));
+    var delay = 100;
+    var params = data || this.data;
+    var publics = path.resolve(__dirname, '../', sys.public);
+    var filename = md5(target) + '.png';
+    var screenshot = path.join(publics, filename);
+    if (target.indexOf('chartjs/') > -1) delay = 1000;
+    if (params.delay) delay = parseInt(params.delay);
+    if (fs.existsSync(screenshot)) return callback(null, filename, screenshot);
     return phantom.create(function(ph) {
         return ph.createPage(function(page) {            
             var viewportSize = { top: 0, left: 0 }
-            viewportSize.width = parseInt(self.data.width)
-            viewportSize.height = parseInt(self.data.height)
+            viewportSize.width = parseInt(params.width)
+            viewportSize.height = parseInt(params.height)
             page.set('viewportSize', viewportSize)
             page.open(target, function(status) {
                 if (status !== 'success') {
                     callback(new Error(status));
                     return ph.exit()
                 }
-                var publics = path.resolve(__dirname, '../', sys.public);
-                var filename = md5(target) + '.png';
-                var screenshot = path.join(publics, filename);
                 // 这里有一处硬编码，如何在 phantom 里优雅的判断已经加载完成？
                 setTimeout(function() {
                     page.render(screenshot, function(err) {
                         callback(err, filename, screenshot);
-                        return ph.exit()
+                        return ph.exit();
                     });
-                }, 1000);
+                }, delay);
             });
         });
     });

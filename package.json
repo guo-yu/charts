@@ -1,9 +1,9 @@
 {
   "name": "charts",
-  "version": "0.0.2",
   "port": "3001",
+  "version": "0.0.3",
   "public": "./public",
-  "seed": "https://github.com/turingou/charts-theme-chartjs.git",
+  "seed": "https://github.com/turingou/charts-theme-sparkline.git",
   "description": "a chart generator service for easy embed collections of charts in emails",
   "main": "index.js",
   "bin": "./bin/cli",
@@ -11,12 +11,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "exeq": "*",
-    "MD5": "*",
-    "phantom": "*",
-    "theme": "*",
-    "express-scaffold": "*",
-    "charts-theme-chartjs": "*"
+    "MD5": "1.2.0",
+    "exeq": "0.4.0",
+    "theme": "latest",
+    "phantom": "~0.5.4",
+    "express-scaffold": "~0.2.2",
+    "charts-theme-chartjs": "latest",
+    "charts-theme-sparkline": "latest"
   },
   "repository": {
     "type": "git",

@@ -1,14 +1,13 @@
-var path = require('path'),
+var url = require('url'),
+    path = require('path'),
     server = require('express-scaffold'),
     charts = require('./charts'),
     sys = require('../package');
 
-var isNumber = function(n) {
-    return n && typeof(n) === 'number';
-}
+var chart = new charts();
 
-var isRemote = function(dir) {
-    return dir && (dir.indexOf('http') === 0 || dir.indexOf('https') === 0);
+var isNumber = function(n) {
+    return n && !isNaN(parseInt(n), 10);
 }
 
 var fetchHW = function(canvas) {
@@ -22,43 +21,45 @@ var fetchHW = function(canvas) {
     return ret;
 }
 
+var joinurl = function(base, k, v) {
+    var parsed = url.parse(base);
+    var key = k + '=';
+    if (!parsed.query) return parsed.href + '?' + key + v;
+    return parsed.href + '&' + key + v;
+};
+
 // GET => http://localhost/chartjs/{a:1,b:2} => img
 // GET => http://localhost/chartjs/{a:1,b:2}?preview=ture => html
-// test: http://localhost:3001/chartjs/300x300/%7Blabels%20:%20[%221%22,%222%22,%223%22,%224%22,%225%22,%226%22,%227%22],datasets:[%7Bdata%20:%20[65,59,90,81,56,55,40]%7D,%20%7Bdata%20:%20[65,59,90,81,56,55,40]%7D]%7D?preview=true
 exports.run = function(port) {
     if (isNumber(port)) sys.port = port;
-
     new server(sys).routes(function(app) {
-        
         app.get('/:theme/:canvas/:data', function(req, res, next) {
             if (!req.params.theme) return next(new Error('theme required'));
             if (!req.params.data) return next(new Error('data required'));
-            
-            var params = {}
+
             var canvas = fetchHW(req.params.canvas);
+            var params = {}
+            params.data = req.params.data;
+            params.width = canvas.width;
+            params.height = canvas.height;
+            if (req.query.type) params.type = req.query.type;
+            if (req.query.delay) params.delay = req.query.delay;
 
-            params.data = {}
-            params.data.data = req.params.data
-            params.data.width = canvas.width;
-            params.data.height = canvas.height;
-            params.theme = req.params.theme || null;
-            
-            var chart = new charts(params);
-
-            // 如果不是 preview 模式，重新访问这个 url
+            // capture 模式，返回图片地址
             if (!req.query.preview) {
-                return chart.capture(path.join(app.locals.url, req.url, '?preview=true'), function(err, img) {
+                var base = path.join(app.locals.url, req.url);
+                var target = joinurl(base, 'preview', true);
+                return chart.capture(target, params, function(err, screenshot) {
                     if (err) return next(err);
-                    return res.redirect(img);
+                    return res.redirect(screenshot);
                 });
             }
 
             // preview 模式，返回 html
-            chart.render(function(err, html) {
+            chart.render(req.params.theme, params, function(err, html) {
                 if (err) return next(err);
                 return res.send(html);
             });
         });
-
     }).run();
 }
