@@ -1,1 +1,1 @@
-exports = module.exports = require('./libs/charts');
+module.exports = require('./libs/charts');

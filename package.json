@@ -1,7 +1,7 @@
 {
   "name": "charts",
   "port": "3001",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "public": "./public",
   "seed": "https://github.com/turingou/charts-theme-sparkline.git",
   "description": "a chart generator service for easy embed collections of charts in emails",
