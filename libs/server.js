@@ -1,6 +1,6 @@
 var url = require('url');
 var path = require('path');
-var server = require('express-scaffold');
+var Server = require('express-scaffold');
 var charts = require('./charts');
 var sys = require('../package');
 
@@ -34,7 +34,7 @@ function joinurl(base, k, v) {
 // GET => http://localhost/chartjs/{a:1,b:2}?preview=ture => html
 function server(port) {
   if (isNumber(port)) sys.port = port;
-  new server(sys).routes(function(app) {
+  new Server(sys).routes(function(app) {
     app.get('/:theme/:canvas/:data', function(req, res, next) {
       if (!req.params.theme) return next(new Error('theme required'));
       if (!req.params.data) return next(new Error('data required'));
