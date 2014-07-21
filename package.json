@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "MD5": "1.2.0",
-    "exeq": "0.4.0",
+    "exeq": "1.0.0",
     "theme": "latest",
     "phantom": "~0.5.4",
     "express-scaffold": "~0.2.2",

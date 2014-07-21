@@ -7,5 +7,5 @@ module.exports = function() {
   if (!command || command != 'init') return server.run(command);
   var sh = [];
   sh.push('git clone ' + sys.seed + ' .')
-  return exeq(sh).run();
+  return exeq(sh);
 }
